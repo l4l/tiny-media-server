@@ -1,7 +1,12 @@
 [package]
 name = "tiny-media-server"
 version = "0.1.0"
+description = "media server for your videos"
+license = "MIT"
 edition = "2021"
+
+keywords = ["media-server", "video", "web-server", "rocket"]
+categories = ["command-line-utilities", "multimedia::video"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
