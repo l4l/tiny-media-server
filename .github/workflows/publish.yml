@@ -11,7 +11,17 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            artifact_name: tiny-media-server
+            asset_name: tiny-media-server-linux-amd64
+          - os: windows-latest
+            artifact_name: tiny-media-server.exe
+            asset_name: tiny-media-server-windows-amd64
+          - os: macos-latest
+            artifact_name: tiny-media-server
+            asset_name: tiny-media-server-macos-amd64
 
     steps:
     - uses: actions/checkout@v2
@@ -21,10 +31,11 @@ jobs:
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: target/release/tiny-media-server
-        asset_name: tiny-media-server-${{ matrix.os }}
+        file: target/release/${{ matrix.artifact_name }}
+        asset_name: ${{ matrix.asset_name }}
         tag: ${{ github.ref }}
     - uses: katyo/publish-crates@v1
+      if: matrix.os == 'ubuntu-latest'
       with:
           registry-token: ${{ secrets.CARGO_REGISTRY_TOKEN }}
           no-verify: true
