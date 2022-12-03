@@ -12,5 +12,5 @@ categories = ["command-line-utilities", "multimedia::video"]
 
 [dependencies]
 rocket = { version = "0.5.0-rc.2", features = ["json", "serde_json"] }
-rocket_dyn_templates = { version = "0.1.0-rc.2", features = ["tera"] }
+rocket-include-tera = "0.5.4"
 walkdir = "2.3.2"

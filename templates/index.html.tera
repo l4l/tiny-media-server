@@ -8,7 +8,7 @@
 </head>
 <body>
 {% for video in videos %}
-    <a href="/{{ video }}">{{ video }}</a></br>
+    <a href="/play/{{ video }}">{{ video }}</a></br>
 {% endfor %}
 </body>
 </html>
