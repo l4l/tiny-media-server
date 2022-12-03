@@ -1,0 +1,30 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  bin-build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build
+      run: cargo build --release
+    - name: Upload binary
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: target/release/tiny-media-server
+        asset_name: tiny-media-server-${{ matrix.os }}
+        tag: ${{ github.ref }}
+    - uses: katyo/publish-crates@v1
+      with:
+          registry-token: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+          no-verify: true
