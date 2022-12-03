@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Tiny Media Server</title>
+    <style type="text/css">a { display: block; margin: 15px 0px; font-size: 25px; }</style>
+</head>
+<body>
+{% for video in videos %}
+    <a href="/{{ video }}">{{ video }}</a></br>
+{% endfor %}
+</body>
+</html>

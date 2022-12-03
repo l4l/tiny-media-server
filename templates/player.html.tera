@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Tiny Media Server</title>
+    <style type="text/css">body { background-color: gray; }</style>
+</head>
+<body>
+    <video controls width="800" height="600">
+        <source src="/{{ video }}"/>
+    </video>
+</body>
+</html>
