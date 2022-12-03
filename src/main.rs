@@ -2,15 +2,41 @@ use std::path::PathBuf;
 
 use media::MediaPath;
 use rocket::{fs::NamedFile, get, http::Status, launch, routes, State};
-use rocket_dyn_templates::{context, Template};
+use rocket_include_tera::{
+    tera_resources_initialize, tera_response, TeraContextManager, TeraResponse,
+};
+
+macro_rules! count {
+    () => (0usize);
+    ( $a:expr ) => (1usize);
+    ( $x:expr, $($xs:expr),* ) => (1usize + count!( $($xs),* ));
+}
+
+macro_rules! hm {
+    ($($k:expr => $v:expr),*) => {{
+        let mut map = ::std::collections::HashMap::with_capacity(
+            count!( $($k),* )
+        );
+        $( map.insert($k, $v); )*
+        map
+    }};
+}
 
 mod media;
 
 #[get("/")]
-fn hello(base: &State<MediaPath>) -> Result<Template, (Status, String)> {
+fn hello(
+    base: &State<MediaPath>,
+    tera_cm: &State<TeraContextManager>,
+) -> Result<TeraResponse, (Status, String)> {
     let files = base.media_list();
 
-    Ok(Template::render("index", context!(videos: files)))
+    Ok(tera_response!(
+        tera_cm,
+        Default::default(),
+        "index",
+        hm!("videos" => files)
+    ))
 }
 
 #[get("/<path..>")]
@@ -19,8 +45,8 @@ async fn fetch_file(base: &State<MediaPath>, path: PathBuf) -> Option<NamedFile>
 }
 
 #[get("/play/<file>")]
-fn player(file: PathBuf) -> Template {
-    Template::render("player", context!(video: file))
+fn player(file: PathBuf, tera_cm: &State<TeraContextManager>) -> TeraResponse {
+    tera_response!(tera_cm, Default::default(), "player", hm!("video" => file))
 }
 
 #[launch]
@@ -30,5 +56,11 @@ fn rocket() -> _ {
     rocket::build()
         .manage(MediaPath::new(media_path))
         .mount("/", routes![hello, fetch_file, player])
-        .attach(Template::fairing())
+        .attach(TeraResponse::fairing(|tera| {
+            tera_resources_initialize!(
+                tera,
+                "index" => "templates/index.html.tera",
+                "player" => "templates/player.html.tera",
+            );
+        }))
 }
