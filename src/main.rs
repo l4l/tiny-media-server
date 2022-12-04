@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 use media::MediaPath;
-use rocket::{fs::NamedFile, get, http::Status, launch, routes, State};
+use rocket::{get, http::Status, launch, routes, State};
 use rocket_include_tera::{
     tera_resources_initialize, tera_response, TeraContextManager, TeraResponse,
 };
@@ -22,6 +22,7 @@ macro_rules! hm {
     }};
 }
 
+mod ffmpeg;
 mod media;
 
 #[get("/")]
@@ -40,8 +41,16 @@ fn hello(
 }
 
 #[get("/<path..>")]
-async fn fetch_file(base: &State<MediaPath>, path: PathBuf) -> Option<NamedFile> {
-    NamedFile::open(base.base_dir().join(path)).await.ok()
+async fn fetch_file(
+    base: &State<MediaPath>,
+    path: PathBuf,
+) -> Result<ffmpeg::FfmpegStream, (Status, String)> {
+    let path = base.base_dir().join(path);
+    if !path.exists() {
+        return Err((Status::NotFound, "file doesn't exist".into()));
+    }
+
+    ffmpeg::FfmpegStream::from_file(path).map_err(|e| (Status::InternalServerError, e))
 }
 
 #[get("/play/<file>")]
@@ -51,6 +60,8 @@ fn player(file: PathBuf, tera_cm: &State<TeraContextManager>) -> TeraResponse {
 
 #[launch]
 fn rocket() -> _ {
+    ffmpeg::check_ffmpeg_present();
+
     let media_path = PathBuf::from(std::env::args().nth(1).unwrap_or_else(|| ".".to_string()));
 
     rocket::build()
