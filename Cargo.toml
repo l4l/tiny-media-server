@@ -13,4 +13,5 @@ categories = ["command-line-utilities", "multimedia::video"]
 [dependencies]
 rocket = { version = "0.5.0-rc.2", features = ["json", "serde_json"] }
 rocket-include-tera = "0.5.4"
+tokio = { version = "1.22.0", default-features = false, features = ["net", "process"] }
 walkdir = "2.3.2"
