@@ -4,11 +4,30 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Tiny Media Server</title>
-    <style type="text/css">a { display: block; margin: 15px 0px; font-size: 25px; }</style>
+    <style type="text/css">
+        div.movie {
+            display: inline-block;
+            text-align: center;
+        }
+        img.thumbnail {
+            width: 300px;
+            height: 200px;
+        }
+        p {
+            display: block;
+            margin: 15px 0px;
+            font-size: 25px;
+        }
+    </style>
 </head>
 <body>
 {% for video in videos %}
-    <a href="/play/{{ video }}">{{ video }}</a></br>
+    <a href="/play/{{ video }}">
+        <div class="movie">
+            <img alt="video thumbnail" class="thumbnail" src="/thumbnail/{{ video }}"/>
+            <p>{{ video }}</p>
+        </div>
+    </a>
 {% endfor %}
 </body>
 </html>

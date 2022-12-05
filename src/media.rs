@@ -4,6 +4,14 @@ const SUPPORTED_FORMATS: &[&str] = &["mp4", "gif", "webm", "ogg", "avi", "mkv", 
 
 pub struct MediaPath(PathBuf);
 
+impl std::ops::Deref for MediaPath {
+    type Target = Path;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
 impl MediaPath {
     pub fn new<P: AsRef<Path>>(root: P) -> Self {
         Self(root.as_ref().to_owned())

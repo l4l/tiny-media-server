@@ -8,7 +8,7 @@
 </head>
 <body>
     <video controls width="800" height="600">
-        <source src="/{{ video }}"/>
+        <source src="/{{ video }}" type="video/mp4"/>
     </video>
 </body>
 </html>
