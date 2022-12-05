@@ -45,7 +45,7 @@ async fn fetch_file(
     base: &State<MediaPath>,
     path: PathBuf,
 ) -> Result<ffmpeg::FfmpegStream, (Status, String)> {
-    let path = base.base_dir().join(path);
+    let path = base.join(path);
     if !path.exists() {
         return Err((Status::NotFound, "file doesn't exist".into()));
     }
@@ -58,6 +58,14 @@ fn player(file: PathBuf, tera_cm: &State<TeraContextManager>) -> TeraResponse {
     tera_response!(tera_cm, Default::default(), "player", hm!("video" => file))
 }
 
+#[get("/thumbnail/<file>")]
+async fn thumbnail(
+    base: &State<MediaPath>,
+    file: PathBuf,
+) -> Option<std::io::Result<ffmpeg::Thumbnail>> {
+    ffmpeg::Thumbnail::new(&base.join(file)).await
+}
+
 #[launch]
 fn rocket() -> _ {
     ffmpeg::check_ffmpeg_present();
@@ -66,7 +74,7 @@ fn rocket() -> _ {
 
     rocket::build()
         .manage(MediaPath::new(media_path))
-        .mount("/", routes![hello, fetch_file, player])
+        .mount("/", routes![hello, fetch_file, player, thumbnail])
         .attach(TeraResponse::fairing(|tera| {
             tera_resources_initialize!(
                 tera,
