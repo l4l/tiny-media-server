@@ -22,6 +22,7 @@ jobs:
     - uses: actions-rs/toolchain@v1
       with:
         components: rustfmt, clippy
+    - uses: Swatinem/rust-cache@v2
     - name: Check format
       run: cargo fmt -- --check
     - name: Lint
